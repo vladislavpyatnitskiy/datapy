@@ -8,7 +8,7 @@ def prices_yahoo(y, s=None, e=None):
     for ticker in y:
         if s is None and e is None:
             # When neither start date nor end date is defined
-            data = yf.download(ticker)
+            data = yf.download(ticker, start="2007-01-01")
         elif e is None:
             data = yf.download(ticker, start=s) # Only start date is defined
         elif s is None:
@@ -19,11 +19,12 @@ def prices_yahoo(y, s=None, e=None):
 
         # Extract the Adjusted Close prices and add to the DataFrame
         if not data.empty:
-            p[ticker] = data['Adj Close']
+            p[ticker] = data[('Close', f'{ticker}')]
 
     p = p.dropna() # Drop rows with NA values
-
+    
+    p.columns = y
+    
     return p
 
-result = prices_yahoo(y=["UNM", "AIG", "OMF", "MET", "HIG"], s="2022-01-01")
-print(result) # Test
+prices_yahoo(y=["UNM", "AIG", "OMF", "MET", "HIG"], s="2022-01-01")
